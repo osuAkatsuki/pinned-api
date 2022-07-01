@@ -142,7 +142,7 @@ async def get_pinned(
         "code": 200,
         "scores": [
             {
-                "id": s["score_id"],
+                "id": str(s["score_id"]),
                 "beatmap_md5": s["beatmap_md5"],
                 "score": s["score"],
                 "max_combo": s["score_combo"],
@@ -190,7 +190,7 @@ async def get_pinned(
 from pydantic import BaseModel, Field
 
 class PinScoreModel(BaseModel):
-    score_id: int = Field(alias="id")
+    score_id: str = Field(alias="id")
     relax: int = Field(alias="rx", ge=0, le=2) # 0, 1, 2
 
 @router.post("/pin")
@@ -247,4 +247,4 @@ async def unpin_score(
     await services.db.execute(
         f"UPDATE {table} SET pinned = 0 WHERE id = :id", {"id": form_data.score_id}
     )
-    return {}
+    return {"score_id": form_data.score_id}
